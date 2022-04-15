@@ -3,6 +3,12 @@ frameworkVersion: '3'
 
 custom:
   tableName: 'lesq-table-${sls:stage}'
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      migrate: true
 
 provider:
   name: aws
@@ -33,7 +39,7 @@ functions:
     handler: handler/menu/get.handler
     events:
       - http:
-          path: api/merchants/:merchantId/menu
+          path: api/merchants/{merchantId}/menu
           method: get
 
 resources:
@@ -53,3 +59,7 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.tableName}
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
