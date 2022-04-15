@@ -1,0 +1,55 @@
+service: lesq-api
+frameworkVersion: '3'
+
+custom:
+  tableName: 'lesq-table-${sls:stage}'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-southeast-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [ LesQTable, Arn ]
+  environment:
+    LESQ_TABLE: ${self:custom.tableName}
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - httpApi: '*'
+  menu-get:
+    handler: handler/menu/get.handler
+    events:
+      - http:
+          path: api/merchants/:merchantId/menu
+          method: get
+
+resources:
+  Resources:
+    LesQTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.tableName}

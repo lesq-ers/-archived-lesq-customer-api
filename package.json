@@ -1,0 +1,10 @@
+{
+  "name": "lesq-api",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.67.0",
+    "express": "^4.17.1",
+    "serverless-http": "^2.7.0"
+  }
+}
