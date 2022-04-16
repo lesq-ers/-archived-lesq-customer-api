@@ -9,6 +9,7 @@ custom:
     start:
       port: 8000
       migrate: true
+      dbPath: .db
 
 provider:
   name: aws
