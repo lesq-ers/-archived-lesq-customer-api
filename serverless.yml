@@ -10,6 +10,12 @@ custom:
       port: 8000
       migrate: true
       dbPath: .db
+      seed: true
+    seed:
+      domain:
+        sources:
+          - table: ${self:custom.tableName}
+            sources: [./seed.json]
 
 provider:
   name: aws
