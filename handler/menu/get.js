@@ -1,5 +1,9 @@
-// const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 const { DynamoDB } = require("aws-sdk");
+const express = require("express");
+const serverless = require("serverless-http");
+
+const app = express();
+app.use(express.json());
 
 const dynamoDbClientParams = {};
 if (process.env.IS_OFFLINE) {
@@ -9,24 +13,45 @@ if (process.env.IS_OFFLINE) {
 const db = new DynamoDB(dynamoDbClientParams);
 const TableName = process.env.LESQ_TABLE;
 
-module.exports.handler = async (event, context) => {
-    const { merchantId } = event.pathParameters;
 
-    console.log("Obtaining menu for merchant: ", merchantId);
+app.get("/api/merchants/:merchantId/menu", async (request, response) => {
+    const { merchantId } = request.params;
+
     try {
-        const response = await db.getItem({
-            Key: {
-                "PK": { S: "PK3" },
-                "SK": { S: "SK3" }
-            },
-            TableName
+        const dbResult = await db.query({
+            TableName,
+            KeyConditionExpression: "PK = :pk",
+            ExpressionAttributeValues: {
+                ":pk": { S: `MERCHANT#${merchantId}|MENU#live` }
+            }
         }).promise();
-        console.log(response);
-        return {
-            statusCode: 200,
-            body: JSON.stringify(response)
-        };
+
+        const categories = dbResult.Items
+            .filter((e) => e.SK.S.startsWith("CATEGORY#"))
+            .map((e) => {
+                return {
+                    id: e.id.S,
+                    name: e.name.S
+                };
+            });
+
+        const products = dbResult.Items
+            .filter((e) => e.SK.S.startsWith("PRODUCT#"))
+            .map((e) => {
+                return {
+                    id: e.id.S,
+                    name: e.name.S,
+                    description: e.description.S,
+                    categoryId: e.categoryId.S,
+                    basePrice: e.basePrice.N
+                };
+            });
+
+        const menu = { categories, products };
+        response.json(menu)
     } catch (error) {
         console.log("Error: ", error);
     }
-}
+});
+
+module.exports.handler = serverless(app);
