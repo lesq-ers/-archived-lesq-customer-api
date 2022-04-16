@@ -49,6 +49,13 @@ functions:
           path: api/merchants/{merchantId}/menu
           method: get
 
+  product-get:
+    handler: handler/product/get.handler
+    events:
+      - http:
+          path: api/merchants/{merchantId}/products/{productId}
+          method: get
+
 resources:
   Resources:
     LesQTable:
