@@ -8,7 +8,7 @@ if (process.env.IS_OFFLINE) {
 const db = new DynamoDB(dynamoDbClientParams);
 const TableName = process.env.LESQ_TABLE;
 
-module.exports.handler = async (event, context) => {
+module.exports.get = async (event, context) => {
     const { merchantId, productId } = event.pathParameters;
     const result = await db.getItem({
         TableName,

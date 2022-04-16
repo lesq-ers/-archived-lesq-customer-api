@@ -272,5 +272,10 @@
             ],
             "max": 1
         }
+    },
+    {
+        "PK": "MERCHANT#255",
+        "SK": "_META#PRODUCT#COUNTER",
+        "value": 25
     }
 ]

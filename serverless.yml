@@ -49,8 +49,14 @@ functions:
           path: api/merchants/{merchantId}/menu
           method: get
 
+  product-create:
+    handler: handler/product.create
+    events:
+      - http:
+          path: api/merchants/{merchantId}/products
+          method: post
   product-get:
-    handler: handler/product/get.handler
+    handler: handler/product.get
     events:
       - http:
           path: api/merchants/{merchantId}/products/{productId}
