@@ -15,7 +15,10 @@ custom:
       domain:
         sources:
           - table: ${self:custom.tableName}
-            sources: [./seed.json]
+            sources:
+              - ./seeder/merchants.json
+              - ./seeder/menu-live.json
+              - ./seeder/menu-archived.json
 
 provider:
   name: aws
@@ -72,9 +75,7 @@ resources:
             AttributeType: S
           - AttributeName: SK
             AttributeType: S
-          - AttributeName: GS1PK
-            AttributeType: S
-          - AttributeName: GS1SK
+          - AttributeName: MenuPK
             AttributeType: S
         KeySchema:
           - AttributeName: PK
@@ -82,11 +83,11 @@ resources:
           - AttributeName: SK
             KeyType: RANGE
         GlobalSecondaryIndexes:
-          - IndexName: Gs1Index
+          - IndexName: MenuIndex
             KeySchema:
-            - AttributeName: GS1PK
+            - AttributeName: MenuPK
               KeyType: HASH
-            - AttributeName: GS1SK
+            - AttributeName: SK
               KeyType: RANGE
             Projection:
               ProjectionType: ALL
