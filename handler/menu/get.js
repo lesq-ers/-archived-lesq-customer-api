@@ -10,23 +10,18 @@ if (process.env.IS_OFFLINE) {
     dynamoDbClientParams.region = 'local'
     dynamoDbClientParams.endpoint = 'http://localhost:8000'
 }
+
 const db = new DynamoDB(dynamoDbClientParams);
 const TableName = process.env.LESQ_TABLE;
+const MenuIndexName = 'MenuIndex'
 
 
 app.get("/api/merchants/:merchantId/menu", async (request, response) => {
     const { merchantId } = request.params;
 
     try {
-        const dbResult = await db.query({
-            TableName,
-            KeyConditionExpression: "PK = :pk",
-            ExpressionAttributeValues: {
-                ":pk": { S: `MERCHANT#${merchantId}|MENU#live` }
-            }
-        }).promise();
-
-        const categories = dbResult.Items
+        const menuQueryResults = await retrieveMenuItems(merchantId);
+        const categories = menuQueryResults
             .filter((e) => e.SK.S.startsWith("CATEGORY#"))
             .map((e) => {
                 return {
@@ -35,7 +30,7 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
                 };
             });
 
-        const products = dbResult.Items
+        const products = menuQueryResults
             .filter((e) => e.SK.S.startsWith("PRODUCT#"))
             .map((e) => {
                 return {
@@ -50,8 +45,30 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
         const menu = { categories, products };
         response.json(menu)
     } catch (error) {
+        response.status(500).json({ error });
         console.log("Error: ", error);
     }
 });
+
+const retrieveMenuItems = async (merchantId) => {
+    const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
+
+    const menuDbResults = await db.query({
+        TableName,
+        IndexName: MenuIndexName,
+        KeyConditionExpression: "MenuPK = :pk",
+        ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|MENU#live` } }
+    }).promise();
+
+    const RequestItems = {
+        [TableName]: {
+            Keys: menuDbResults.Items.map((e) => {
+                return { "PK": { S: merchantKey }, "SK": e.SK }
+            })
+        }
+    };
+    const menuItemDbResults = await db.batchGetItem({ RequestItems }).promise();
+    return menuItemDbResults.Responses[TableName]
+}
 
 module.exports.handler = serverless(app);
