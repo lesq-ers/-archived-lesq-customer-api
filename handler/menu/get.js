@@ -50,6 +50,13 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
     }
 });
 
+app.get("/api/merchants/:merchantId/menu/:menuId", async (request, response) => {
+    const { merchantId, menuId } = request.params;
+    console.log({ merchantId, menuId });
+
+    response.json({ merchantId, menuId });
+});
+
 const retrieveMenuItems = async (merchantId) => {
     const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
 

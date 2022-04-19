@@ -45,12 +45,13 @@ functions:
     handler: handler.handler
     events:
       - httpApi: '*'
-  menu-get:
+
+  menu-api:
     handler: handler/menu/get.handler
     events:
       - http:
-          path: api/merchants/{merchantId}/menu
-          method: get
+          path: 'api/merchants/{merchantId}/menu/{default*}'
+          method: '*'
 
   product-create:
     handler: handler/product.create
