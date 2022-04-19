@@ -47,7 +47,7 @@ functions:
       - httpApi: '*'
 
   menu-api:
-    handler: handler/menu/get.handler
+    handler: handler/menu.handler
     events:
       - http:
           path: 'api/merchants/{merchantId}/menu/{default*}'
