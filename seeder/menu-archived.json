@@ -1,8 +1,7 @@
 [
     {
         "PK": "MERCHANT#000255|MENU#0000004",
-        "SK": "CATEGORY#0001",
-        "MenuPK": "MERCHANT#000255|MENU#live"
+        "SK": "CATEGORY#0001"
     },
     {
         "PK": "MERCHANT#000255|MENU#0000004",
@@ -98,7 +97,7 @@
     },
     {
         "PK": "MERCHANT#000255|MENU#0000004",
-        "SK": "PRODUCT#0000022"
+        "SK": "PRODUCT#0000023"
     },
     {
         "PK": "MERCHANT#000255|MENU#0000004",
