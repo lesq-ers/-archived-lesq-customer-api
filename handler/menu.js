@@ -14,8 +14,7 @@ if (process.env.IS_OFFLINE) {
 const db = new DynamoDB(dynamoDbClientParams);
 const TableName = process.env.LESQ_TABLE;
 const MenuIndexName = 'MenuIndex'
-const LiveMenuKey ='MENU#live';
-
+const LiveMenuKey = 'MENU#live';
 
 app.get("/api/merchants/:merchantId/menu", async (request, response) => {
     const { merchantId } = request.params;
@@ -52,6 +51,11 @@ const fetchMerchantCurrentMenu = async (merchantId) => {
         KeyConditionExpression: "MenuPK = :pk",
         ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${LiveMenuKey}` } }
     }).promise();
+    console.log("MENU DB RESULTS:", menuDbResults);
+
+    if (menuDbResults.Count === 0) {
+        throw new LiveMenuNotFoundError({ merchantId });
+    }
 
     return retrieveMenuItemDetails(merchantKey, menuDbResults.Items)
 };
@@ -65,6 +69,10 @@ const fetchMerchantMenuById = async (merchantId, menuId) => {
         KeyConditionExpression: "PK = :pk",
         ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${menuKey}` } }
     }).promise();
+
+    if (menuDbResults.Count === 0) {
+        throw new MenuNotFoundError({ merchantId, menuId });
+    }
 
     return retrieveMenuItemDetails(merchantKey, menuDbResults.Items)
 };
@@ -105,5 +113,25 @@ const assembleMenu = (menuQueryResults) => {
 
     return { categories, products };
 };
+
+
+class LiveMenuNotFoundError extends Error {
+    constructor(args) {
+        super();
+        this.name = 'MenuNotFoundError'
+        this.message = 'Live menu for merchant was not found.'
+        this.merchantId = args.merchantId;
+    }
+}
+
+class MenuNotFoundError extends Error {
+    constructor(args) {
+        super();
+        this.name = 'MenuNotFoundError'
+        this.message = 'Menu not found.'
+        this.merchantId = args.merchantId;
+        this.menuId = args.menuId;
+    }
+}
 
 module.exports.handler = serverless(app);
