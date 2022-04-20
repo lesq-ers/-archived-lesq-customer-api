@@ -51,7 +51,6 @@ const fetchMerchantCurrentMenu = async (merchantId) => {
         KeyConditionExpression: "MenuPK = :pk",
         ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${LiveMenuKey}` } }
     }).promise();
-    console.log("MENU DB RESULTS:", menuDbResults);
 
     if (menuDbResults.Count === 0) {
         throw new LiveMenuNotFoundError({ merchantId });
