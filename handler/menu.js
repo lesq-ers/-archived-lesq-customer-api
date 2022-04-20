@@ -25,7 +25,7 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
-        console.log("Error: ", error);
+        console.error("Error: ", error);
     }
 });
 
@@ -37,7 +37,7 @@ app.get("/api/merchants/:merchantId/menu/:menuId", async (request, response) => 
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
-        console.log("Error: ", error);
+        console.error("Error: ", error);
     }
 });
 
@@ -48,8 +48,11 @@ const fetchMerchantCurrentMenu = async (merchantId) => {
     const menuDbResults = await db.query({
         TableName,
         IndexName: MenuIndexName,
-        KeyConditionExpression: "MenuPK = :pk",
-        ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${LiveMenuKey}` } }
+        KeyConditionExpression: "MenuPK = :pk AND (SK > :sk)",
+        ExpressionAttributeValues: {
+            ":pk": { S: `${merchantKey}|${LiveMenuKey}` },
+            ":sk": { S: "#" }
+        }
     }).promise();
 
     if (menuDbResults.Count === 0) {

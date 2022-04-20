@@ -1,5 +1,10 @@
 [
     {
+        "PK": "MERCHANT#000255",
+        "SK": "#MENU#0000005",
+        "MenuPK": "MERCHANT#000255|MENU#live"
+    },
+    {
         "PK": "MERCHANT#000255|MENU#0000005",
         "SK": "CATEGORY#0001",
         "MenuPK": "MERCHANT#000255|MENU#live"
