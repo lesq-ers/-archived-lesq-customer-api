@@ -42,6 +42,52 @@ app.get("/api/merchants/:merchantId/menu/:menuId", async (request, response) => 
 });
 
 
+app.post("/api/merchants/:merchantId/menu/:menuId/live", async (request, response) => {
+    const { merchantId, menuId } = request.params;
+
+    try {
+        // delete current menu
+        const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
+        const currentMenuDbResults = await db.query({
+            TableName,
+            IndexName: MenuIndexName,
+            KeyConditionExpression: "MenuPK = :pk",
+            ExpressionAttributeValues: {
+                ":pk": { S: `${merchantKey}|${LiveMenuKey}` }
+            }
+        }).promise();
+
+        if (currentMenuDbResults.Count > 0) {
+            const updateRequests = currentMenuDbResults.Items.map((item) => {
+                return {
+                    Update: {
+                        Key: {
+                            "PK": item.PK,
+                            "SK": item.SK
+                        },
+                        TableName,
+                        UpdateExpression: "REMOVE MenuPK",
+                    }
+                };
+            });
+
+            const transactWriteItems = await db.transactWriteItems({
+                ReturnConsumedCapacity: "TOTAL",
+                TransactItems: updateRequests
+            }).promise();
+
+            console.log("transactWriteItems:", transactWriteItems);
+        }
+
+        // create new menu
+        response.json("Success?");
+    } catch (error) {
+        response.status(500).json({ error });
+        console.error("Error: ", error);
+    }
+
+});
+
 const fetchMerchantCurrentMenu = async (merchantId) => {
     const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
 
