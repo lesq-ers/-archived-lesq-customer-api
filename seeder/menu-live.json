@@ -2,7 +2,8 @@
     {
         "PK": "MERCHANT#000255",
         "SK": "#MENU#0000005",
-        "MenuPK": "MERCHANT#000255|MENU#live"
+        "MenuPK": "MERCHANT#000255|MENU#live",
+        "menuId": "5"
     },
     {
         "PK": "MERCHANT#000255|MENU#0000005",
