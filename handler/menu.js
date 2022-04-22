@@ -70,16 +70,38 @@ app.post("/api/merchants/:merchantId/menu/:menuId/live", async (request, respons
                     }
                 };
             });
-
-            const transactWriteItems = await db.transactWriteItems({
-                ReturnConsumedCapacity: "TOTAL",
-                TransactItems: updateRequests
-            }).promise();
-
-            console.log("transactWriteItems:", transactWriteItems);
         }
 
         // create new menu
+        const menuKey = `MENU#${menuId.padStart(7, '0')}`;
+        const newLiveMenuDbResults = await db.query({
+            TableName,
+            KeyConditionExpression: "PK = :pk",
+            ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${menuKey}` } },
+            ReturnConsumedCapacity: "TOTAL"
+        }).promise();
+
+        if (newLiveMenuDbResults.Count > 0) {
+            const updateRequests = newLiveMenuDbResults.Items.map((item) => {
+                return {
+                    Update: {
+                        Key: {
+                            "PK": item.PK,
+                            "SK": item.SK
+                        },
+                        TableName,
+                        UpdateExpression: "REMOVE MenuPK",
+                    }
+                };
+            });
+
+            const transactWriteItems2 = await db.transactWriteItems({
+                ReturnConsumedCapacity: "TOTAL",
+                TransactItems: updateRequests
+            }).promise();
+        }
+
+
         response.json("Success?");
     } catch (error) {
         response.status(500).json({ error });
