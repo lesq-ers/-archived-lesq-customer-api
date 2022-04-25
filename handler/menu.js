@@ -56,7 +56,7 @@ app.post("/api/merchants/:merchantId/menu/:menuId/live", async (request, respons
 });
 
 const buildMerchantKey = (merchantId) => {
-    return `MERCHANT#${merchantId.padStart(6, '0')}`;
+    return `MERCHANT#${merchantId.padStart(7, '0')}`;
 };
 
 const buildMenuKey = (menuId) => {
