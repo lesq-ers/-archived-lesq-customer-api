@@ -15,6 +15,7 @@ const db = new DynamoDB(dynamoDbClientParams);
 const TableName = process.env.LESQ_TABLE;
 const MenuIndexName = 'MenuIndex'
 const LiveMenuKey = 'MENU#live';
+const TRANSACTION_BATCH_SIZE = 10
 
 app.get("/api/merchants/:merchantId/menu", async (request, response) => {
     const { merchantId } = request.params;
@@ -25,7 +26,6 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
-        console.error("Error: ", error);
     }
 });
 
@@ -37,7 +37,6 @@ app.get("/api/merchants/:merchantId/menu/:menuId", async (request, response) => 
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
-        console.error("Error: ", error);
     }
 });
 
@@ -46,72 +45,26 @@ app.post("/api/merchants/:merchantId/menu/:menuId/live", async (request, respons
     const { merchantId, menuId } = request.params;
 
     try {
-        // delete current menu
-        const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
-        const currentMenuDbResults = await db.query({
-            TableName,
-            IndexName: MenuIndexName,
-            KeyConditionExpression: "MenuPK = :pk",
-            ExpressionAttributeValues: {
-                ":pk": { S: `${merchantKey}|${LiveMenuKey}` }
-            }
-        }).promise();
-
-        if (currentMenuDbResults.Count > 0) {
-            const updateRequests = currentMenuDbResults.Items.map((item) => {
-                return {
-                    Update: {
-                        Key: {
-                            "PK": item.PK,
-                            "SK": item.SK
-                        },
-                        TableName,
-                        UpdateExpression: "REMOVE MenuPK",
-                    }
-                };
-            });
-        }
-
-        // create new menu
-        const menuKey = `MENU#${menuId.padStart(7, '0')}`;
-        const newLiveMenuDbResults = await db.query({
-            TableName,
-            KeyConditionExpression: "PK = :pk",
-            ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${menuKey}` } },
-            ReturnConsumedCapacity: "TOTAL"
-        }).promise();
-
-        if (newLiveMenuDbResults.Count > 0) {
-            const updateRequests = newLiveMenuDbResults.Items.map((item) => {
-                return {
-                    Update: {
-                        Key: {
-                            "PK": item.PK,
-                            "SK": item.SK
-                        },
-                        TableName,
-                        UpdateExpression: "REMOVE MenuPK",
-                    }
-                };
-            });
-
-            const transactWriteItems2 = await db.transactWriteItems({
-                ReturnConsumedCapacity: "TOTAL",
-                TransactItems: updateRequests
-            }).promise();
-        }
-
-
-        response.json("Success?");
+        await unsetMerchantLiveMenu(merchantId)
+        const menuQueryResults = await setMerchantLiveMenu(merchantId, menuId);
+        const menu = assembleMenu(menuQueryResults);
+        response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
-        console.error("Error: ", error);
     }
 
 });
 
+const buildMerchantKey = (merchantId) => {
+    return `MERCHANT#${merchantId.padStart(6, '0')}`;
+};
+
+const buildMenuKey = (menuId) => {
+    return `MENU#${menuId.padStart(7, '0')}`;
+};
+
 const fetchMerchantCurrentMenu = async (merchantId) => {
-    const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
+    const merchantKey = buildMerchantKey(merchantId);
 
     const menuDbResults = await db.query({
         TableName,
@@ -131,7 +84,7 @@ const fetchMerchantCurrentMenu = async (merchantId) => {
 };
 
 const fetchMerchantMenuById = async (merchantId, menuId) => {
-    const merchantKey = `MERCHANT#${merchantId.padStart(6, '0')}`;
+    const merchantKey = buildMerchantKey(merchantId);
     const menuKey = `MENU#${menuId.padStart(7, '0')}`
 
     const menuDbResults = await db.query({
@@ -184,6 +137,85 @@ const assembleMenu = (menuQueryResults) => {
     return { categories, products };
 };
 
+const unsetMerchantLiveMenu = async (merchantId) => {
+    const merchantKey = buildMerchantKey(merchantId);
+
+    const currentMenuDbResults = await db.query({
+        TableName,
+        IndexName: MenuIndexName,
+        KeyConditionExpression: "MenuPK = :pk",
+        ExpressionAttributeValues: {
+            ":pk": { S: `${merchantKey}|${LiveMenuKey}` }
+        }
+    }).promise();
+
+    if (currentMenuDbResults.Count > 0) {
+        for (let i = 0; i < currentMenuDbResults.Count; i += TRANSACTION_BATCH_SIZE) {
+            const endIndex = i + TRANSACTION_BATCH_SIZE;
+            const TransactItems = currentMenuDbResults.Items.slice(i, endIndex)
+                .map((item) => {
+                    return {
+                        Update: {
+                            Key: {
+                                "PK": item.PK,
+                                "SK": item.SK
+                            },
+                            TableName,
+                            UpdateExpression: "REMOVE MenuPK",
+                        }
+                    };
+                });
+
+            const transactWriteItems = await db.transactWriteItems({
+                TransactItems,
+                ReturnConsumedCapacity: "TOTAL"
+            }).promise();
+        }
+    } else {
+        console.warn("No live menu set for merchant: ", merchantId);
+    }
+};
+
+const setMerchantLiveMenu = async (merchantId, menuId) => {
+    const merchantKey = buildMerchantKey(merchantId);
+    const menuKey = buildMenuKey(menuId);
+    const newLiveMenuDbResults = await db.query({
+        TableName,
+        KeyConditionExpression: "PK = :pk",
+        ExpressionAttributeValues: { ":pk": { S: `${merchantKey}|${menuKey}` } },
+        ReturnConsumedCapacity: "TOTAL"
+    }).promise();
+
+    if (newLiveMenuDbResults.Count > 0) {
+        for (let i = 0; i < newLiveMenuDbResults.Count; i += TRANSACTION_BATCH_SIZE) {
+            const endIndex = i + TRANSACTION_BATCH_SIZE;
+            const TransactItems = newLiveMenuDbResults.Items.slice(i, endIndex)
+                .map((item) => {
+                    return {
+                        Update: {
+                            Key: {
+                                "PK": item.PK,
+                                "SK": item.SK
+                            },
+                            TableName,
+                            UpdateExpression: "SET MenuPK = :menuPk",
+                            ExpressionAttributeValues: { ":menuPk": { S: `${merchantKey}|${LiveMenuKey}` } }
+                        }
+                    };
+                });
+
+            await db.transactWriteItems({
+                TransactItems,
+                ReturnConsumedCapacity: "TOTAL"
+            }).promise();
+        }
+
+        return retrieveMenuItemDetails(merchantKey, newLiveMenuDbResults.Items)
+    } else {
+        throw new MenuNotFoundError({ merchantId, menuId });
+    }
+};
+
 
 class LiveMenuNotFoundError extends Error {
     constructor(args) {
@@ -198,7 +230,7 @@ class MenuNotFoundError extends Error {
     constructor(args) {
         super();
         this.name = 'MenuNotFoundError'
-        this.message = 'Menu not found.'
+        this.message = `Menu ${args.merchantId} not found for merchant ${args.menuId}.`
         this.merchantId = args.merchantId;
         this.menuId = args.menuId;
     }
