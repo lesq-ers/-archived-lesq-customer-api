@@ -3,32 +3,32 @@
         "name": "Espresso",
         "SK": "CATEGORY#0001",
         "id": "1",
-        "PK": "MERCHANT#000255"
+        "PK": "MERCHANT#0000001"
     },
     {
         "name": "Chocolate",
         "SK": "CATEGORY#0002",
         "id": "2",
-        "PK": "MERCHANT#000255"
+        "PK": "MERCHANT#0000001"
     },
     {
         "name": "Frappuccino",
         "SK": "CATEGORY#0003",
         "id": "3",
-        "PK": "MERCHANT#000255"
+        "PK": "MERCHANT#0000001"
     },
     {
         "name": "Teavana Teas",
         "SK": "CATEGORY#0004",
         "id": "4",
-        "PK": "MERCHANT#000255"
+        "PK": "MERCHANT#0000001"
     },
     {
         "SK": "PRODUCT#0000001",
         "name": "Caffe Americano",
         "description": "Rich espresso shots with hot water",
         "id": "1",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "1",
         "basePrice": 155
     },
@@ -37,7 +37,7 @@
         "name": "Caffe Latte",
         "description": "Rich espressso balanced with steamed milk and a dollop of foam",
         "id": "2",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "1",
         "basePrice": 165
     },
@@ -46,7 +46,7 @@
         "name": "Caffe Mocha",
         "description": "Combination of rich espresso, bittersweet mocha sauce, and steamed milk",
         "id": "3",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "1",
         "basePrice": 180
     },
@@ -55,7 +55,7 @@
         "name": "Caramel Macchiato",
         "description": "Steamed milk with vanilla syrup is marked with espresso and topped with caramel drizzle",
         "id": "4",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "1",
         "basePrice": 190
     },
@@ -64,7 +64,7 @@
         "name": "Signature Hot Chocolate",
         "description": "Four cocoas and steamed milk dusted with chocolate poweder",
         "id": "5",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "2",
         "basePrice": 175
     },
@@ -73,7 +73,7 @@
         "name": "Coffee Jelly Frappuccino",
         "description": "Layer of coffee jelly made with Dark Roast and cofee blended with milk and ice",
         "id": "6",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 195
     },
@@ -82,7 +82,7 @@
         "name": "Java Chip Frappuccino",
         "description": "Blend of mocha sauce, Frappuccino chips, coffee, milk, and ice then topped with mocha drizzle",
         "id": "7",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 195
     },
@@ -91,7 +91,7 @@
         "name": "Mocha Frappuccino",
         "description": "Mocha sauce blended with coffee, milk, and ice then topped with mocha drizzle",
         "id": "8",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 180
     },
@@ -100,7 +100,7 @@
         "name": "Caramel Frappuccino",
         "description": "Caramel syrup blended with coffee, milk, and ice then topped with caramel sauce",
         "id": "9",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 180
     },
@@ -109,7 +109,7 @@
         "name": "Green Tea Cream Frappuccino",
         "description": "Blend of sweetened matcha green tea, milk, and ice",
         "id": "10",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 195
     },
@@ -118,7 +118,7 @@
         "name": "Strawberries and cream Frappuccino",
         "description": "Sip on the cream of the crop with a blend of strawberries, milk, and ice",
         "id": "11",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 195
     },
@@ -127,7 +127,7 @@
         "name": "Chocolae Chip Cream Frappuccino",
         "description": "Rich mocha sauce meets chocolate chips, milk, and ice then topped off with mocha drizzle",
         "id": "12",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 195
     },
@@ -136,7 +136,7 @@
         "name": "Caramel Cream Frappuccino",
         "description": "Sweet caramel blended with milk and ice and topped with caramel drizzle",
         "id": "13",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 180
     },
@@ -145,7 +145,7 @@
         "name": "Chocolate Cream Frappuccino",
         "description": "A rich and creamy blend of chocolate flavored sauce, milk, and ice",
         "id": "14",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 180
     },
@@ -154,7 +154,7 @@
         "name": "Vanilla Cream Frappuccino",
         "description": "Cream blend of vanilla bean, milk, and ice takes vanilla flavor to another level",
         "id": "15",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 180
     },
@@ -163,7 +163,7 @@
         "name": "Dark Mocha Frappuccino",
         "description": "Blend of dark cocoa milk, ice, and coffee then dusted with dark mocha powder",
         "id": "16",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 200
     },
@@ -172,7 +172,7 @@
         "name": "Coffee Frappuccino",
         "description": "Coffee meets milk and ice to create one of our most-beloved original Frappuccino blended beverages",
         "id": "17",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "3",
         "basePrice": 180
     },
@@ -181,7 +181,7 @@
         "name": "Iced Shaken Golden Monkey w/ Grapefruit & Honey",
         "description": "A traditional black tea experience combined with delicious bits of pomelo fruit, grapefruit, and honey",
         "id": "18",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 165
     },
@@ -190,7 +190,7 @@
         "name": "Iced Shaken Hibiscus Tea w/ Pomegranate Pearls",
         "description": "Combination of our hibiscus tea and bursting pearls of real pomegranate juice",
         "id": "19",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 165
     },
@@ -199,7 +199,7 @@
         "name": "Matcha and Espresso Fusion",
         "description": "Our matcha powder layered with milk and our signature espresso brings an inventive combination of coffee and tea",
         "id": "20",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 185
     },
@@ -208,7 +208,7 @@
         "name": "Iced Shaken Golden Monkey Tea",
         "description": "Lightly sweetened premium black tea shaken with ice",
         "id": "21",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 145
     },
@@ -217,7 +217,7 @@
         "name": "Iced Shaken Hibiscus Tea",
         "description": "Lightly sweetened blend of hibiscus, lemongrass, juicy papaya, and mango shaken with ice",
         "id": "22",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 145
     },
@@ -226,7 +226,7 @@
         "name": "Golden Monkey Tea Latte",
         "description": "Blendo of rich, full leaf black teas lightly sweetened and topped with steamed milk",
         "id": "23",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 165
     },
@@ -235,7 +235,7 @@
         "name": "Green Tea Latte",
         "description": "Lightly sweetened creamy matcha served with steamed milk",
         "id": "24",
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "categoryId": "4",
         "basePrice": 175
     },
@@ -274,7 +274,7 @@
         }
     },
     {
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "SK": "_META#PRODUCT#COUNTER",
         "value": 25
     }

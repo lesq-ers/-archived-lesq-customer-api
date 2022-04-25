@@ -1,111 +1,111 @@
 [
     {
-        "PK": "MERCHANT#000255",
+        "PK": "MERCHANT#0000001",
         "SK": "#MENU#0000004",
         "menuId": "4"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "CATEGORY#0001"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "CATEGORY#0002"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000001"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000002"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000003"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000004"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000005"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000006"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000007"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000008"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000009"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000010"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000011"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000012"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000013"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000014"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000015"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000016"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000017"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000018"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000019"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000020"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000021"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000022"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000023"
     },
     {
-        "PK": "MERCHANT#000255|MENU#0000004",
+        "PK": "MERCHANT#0000001|MENU#0000004",
         "SK": "PRODUCT#0000024"
     }
 ]
