@@ -179,6 +179,17 @@ const unsetMerchantLiveMenu = async (merchantId) => {
 const setMerchantLiveMenu = async (merchantId, menuId) => {
     const merchantKey = buildMerchantKey(merchantId);
     const menuKey = buildMenuKey(menuId);
+
+    await db.updateItem({
+        TableName,
+        Key: {
+            "PK": { S: merchantKey },
+            "SK": { S: `#${menuKey}` }
+        },
+        UpdateExpression: "SET MenuPK = :menuPk",
+        ExpressionAttributeValues: { ":menuPk": { S: `${merchantKey}|${LiveMenuKey}` } }
+    }).promise();
+
     const newLiveMenuDbResults = await db.query({
         TableName,
         KeyConditionExpression: "PK = :pk",
