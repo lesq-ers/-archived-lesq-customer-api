@@ -1,5 +1,13 @@
 [
     {
+        "PK": "MERCHANT#0000001|MENU#0000004",
+        "SK": "#METADATA",
+        "notes": "Secondary menu",
+        "description": "24-hour shift menu",
+        "dateCreated": "2022-04-25T15:11:29Z",
+        "lastUpdated": "2022-04-26T21:18:17Z"
+    },
+    {
         "PK": "MERCHANT#0000001",
         "SK": "#MENU#0000004",
         "menuId": "4"

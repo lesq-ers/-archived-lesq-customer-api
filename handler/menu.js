@@ -21,8 +21,7 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
     const { merchantId } = request.params;
 
     try {
-        const menuQueryResults = await fetchMerchantCurrentMenu(merchantId);
-        const menu = assembleMenu(menuQueryResults);
+        const menu = await fetchMerchantCurrentMenu(merchantId);;
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
@@ -45,8 +44,8 @@ app.post("/api/merchants/:merchantId/menu/:menuId/live", async (request, respons
 
     try {
         await unsetMerchantLiveMenu(merchantId)
-        const menuQueryResults = await setMerchantLiveMenu(merchantId, menuId);
-        const menu = assembleMenu(menuQueryResults);
+        await setMerchantLiveMenu(merchantId, menuId);
+        const menu = await fetchMerchantCurrentMenu(merchantId);;
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
@@ -78,12 +77,12 @@ const fetchMerchantCurrentMenu = async (merchantId) => {
         throw new LiveMenuNotFoundError({ merchantId });
     }
 
-    return retrieveMenuItemDetails(merchantKey, menuDbResults.Items)
+    return await assembleMenu(merchantId, menuDbResults);
 };
 
 const fetchMerchantMenuById = async (merchantId, menuId) => {
     const merchantKey = buildMerchantKey(merchantId);
-    const menuKey = `MENU#${menuId.padStart(7, '0')}`
+    const menuKey = buildMenuKey(menuId);
 
     const menuDbResults = await db.query({
         TableName,
@@ -95,7 +94,13 @@ const fetchMerchantMenuById = async (merchantId, menuId) => {
         throw new MenuNotFoundError({ merchantId, menuId });
     }
 
-    const metadataItem = menuDbResults.Items.find((e) => e.SK.S == "#METADATA");
+    return await assembleMenu(merchantId, menuDbResults);
+};
+
+const assembleMenu = async (merchantId, menuRecords) => {
+    const merchantKey = buildMerchantKey(merchantId);
+
+    const metadataItem = menuRecords.Items.find((e) => e.SK.S == "#METADATA");
     const metadata = {
         note: metadataItem["notes"].S,
         description: metadataItem["description"].S,
@@ -103,18 +108,7 @@ const fetchMerchantMenuById = async (merchantId, menuId) => {
         lastUpdated: metadataItem["lastUpdated"].S
     };
 
-    const menuItemDetails = await retrieveMenuItemDetails(merchantKey, menuDbResults.Items)
-    const {categories, products} = assembleMenu(menuItemDetails);
-
-    return {
-        ...metadata,
-        categories,
-        products
-    }
-};
-
-
-const retrieveMenuItemDetails = async (merchantKey, menuItemKeys) => {
+    const menuItemKeys = menuRecords.Items;
     const RequestItems = {
         [TableName]: {
             Keys: menuItemKeys.map((e) => {
@@ -123,10 +117,7 @@ const retrieveMenuItemDetails = async (merchantKey, menuItemKeys) => {
         }
     };
     const menuItemDbResults = await db.batchGetItem({ RequestItems }).promise();
-    return menuItemDbResults.Responses[TableName]
-};
-
-const assembleMenu = (menuQueryResults) => {
+    const menuQueryResults = menuItemDbResults.Responses[TableName]
     const categories = menuQueryResults
         .filter((e) => e.SK.S.startsWith("CATEGORY#"))
         .map((e) => {
@@ -148,7 +139,7 @@ const assembleMenu = (menuQueryResults) => {
             };
         });
 
-    return { categories, products };
+    return { ...metadata, categories, products };
 };
 
 const unsetMerchantLiveMenu = async (merchantId) => {
@@ -224,7 +215,7 @@ const setMerchantLiveMenu = async (merchantId, menuId) => {
                             },
                             TableName,
                             UpdateExpression: "SET MenuPK = :menuPk",
-                            ExpressionAttributeValues: { ":menuPk": { S: `${merchantKey}|${LiveMenuKey}` } }
+                            ExpressionAttributeValues: { ":menuPk": { S: `${merchantKey}|${LiveMenuKey}` } },
                         }
                     };
                 });
@@ -234,8 +225,6 @@ const setMerchantLiveMenu = async (merchantId, menuId) => {
                 ReturnConsumedCapacity: "TOTAL"
             }).promise();
         }
-
-        return retrieveMenuItemDetails(merchantKey, newLiveMenuDbResults.Items)
     } else {
         throw new MenuNotFoundError({ merchantId, menuId });
     }
