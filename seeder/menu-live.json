@@ -1,5 +1,14 @@
 [
     {
+        "PK": "MERCHANT#0000001|MENU#0000005",
+        "SK": "#METADATA",
+        "MenuPK": "MERCHANT#0000001|MENU#live",
+        "notes": "Initial live menu data",
+        "description": "The basic menu for all your coffee needs",
+        "dateCreated": "2022-04-23T11:32:39Z",
+        "lastUpdated": "2022-04-23T11:32:39Z"
+    },
+    {
         "PK": "MERCHANT#0000001",
         "SK": "#MENU#0000005",
         "MenuPK": "MERCHANT#0000001|MENU#live",

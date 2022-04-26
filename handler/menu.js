@@ -32,8 +32,7 @@ app.get("/api/merchants/:merchantId/menu", async (request, response) => {
 app.get("/api/merchants/:merchantId/menu/:menuId", async (request, response) => {
     const { merchantId, menuId } = request.params;
     try {
-        const menuQueryResults = await fetchMerchantMenuById(merchantId, menuId);
-        const menu = assembleMenu(menuQueryResults);
+        const menu = await fetchMerchantMenuById(merchantId, menuId);
         response.json(menu)
     } catch (error) {
         response.status(500).json({ error });
@@ -69,10 +68,9 @@ const fetchMerchantCurrentMenu = async (merchantId) => {
     const menuDbResults = await db.query({
         TableName,
         IndexName: MenuIndexName,
-        KeyConditionExpression: "MenuPK = :pk AND (SK > :sk)",
+        KeyConditionExpression: "MenuPK = :pk",
         ExpressionAttributeValues: {
             ":pk": { S: `${merchantKey}|${LiveMenuKey}` },
-            ":sk": { S: "#" }
         }
     }).promise();
 
@@ -97,8 +95,24 @@ const fetchMerchantMenuById = async (merchantId, menuId) => {
         throw new MenuNotFoundError({ merchantId, menuId });
     }
 
-    return retrieveMenuItemDetails(merchantKey, menuDbResults.Items)
+    const metadataItem = menuDbResults.Items.find((e) => e.SK.S == "#METADATA");
+    const metadata = {
+        note: metadataItem["notes"].S,
+        description: metadataItem["description"].S,
+        dateCreated: metadataItem["dateCreated"].S,
+        lastUpdated: metadataItem["lastUpdated"].S
+    };
+
+    const menuItemDetails = await retrieveMenuItemDetails(merchantKey, menuDbResults.Items)
+    const {categories, products} = assembleMenu(menuItemDetails);
+
+    return {
+        ...metadata,
+        categories,
+        products
+    }
 };
+
 
 const retrieveMenuItemDetails = async (merchantKey, menuItemKeys) => {
     const RequestItems = {
