@@ -1,127 +1,96 @@
+const express = require("express");
+const serverless = require("serverless-http");
 const { DynamoDB } = require("aws-sdk");
+
+const app = express();
+app.use(express.json());
 
 const dynamoDbClientParams = {};
 if (process.env.IS_OFFLINE) {
     dynamoDbClientParams.region = 'local'
     dynamoDbClientParams.endpoint = 'http://localhost:8000'
 }
+console.log("dynamoDbClientParams", dynamoDbClientParams);
+// console.log("DynamoDB", DynamoDB);
+
 const db = new DynamoDB(dynamoDbClientParams);
 const TableName = process.env.LESQ_TABLE;
 
-module.exports.get = async (event, context) => {
-    const { merchantId, productId } = event.pathParameters;
-    const result = await db.getItem({
+
+app.get('/api/merchants/:merchantId/products/:productId', async (request, response) => {
+
+    const { merchantId, productId } = request.params;
+
+    // {
+    //     "PK": "MERCHANT#0000001",
+    //     "SK": "PRODUCT#0000001",
+    //     "name": "Caffe Americano",
+    //     "description": "Rich espresso shots with hot water",
+    //     "id": "1",
+    //     "categoryId": "1",
+    //     "basePrice": 155
+    // },
+    // {
+    //     "PK": "MERCHANT#0000001",
+    //     "SK": "PRODUCT#0000001|ADDONS#000001",
+    //     "name": "Size",
+    //     "label": "Choose your size:",
+    //     "meta": {...}
+    // },
+    const productDbResults = await db.query({
         TableName,
-        Key: {
-            "PK": { S: `MERCHANT#${merchantId}` },
-            "SK": { S: `PRODUCT#${productId.padStart(7, '0')}` }
+        KeyConditionExpression: "(PK = :pk) AND begins_with(SK, :sk)",
+        ExpressionAttributeValues: {
+            ":pk": { S: buildMerchantKey(merchantId) },
+            ":sk": { S: buildProductKey(productId) }
         }
     }).promise();
 
-    if (!result.Item) {
+    if (productDbResults.Count === 0) {
+        response.status(404);
+        return;
+    }
+    // console.log("RESULTS:", productDbResults);
+
+    // console.log("Product Item:", productDbResults.Items
+    //     .filter((e) => e.SK.S == buildProductKey(productId)));
+    const product = productDbResults.Items
+        .filter((e) => e.SK.S == buildProductKey(productId))
+        .map((e) => {
+            return {
+                id: e.id.S,
+                name: e.name.S,
+                description: e.description.S,
+                basePrice: e.basePrice.N
+            }
+        })[0];
+    console.log("Product", product);
+
+    const productAddOnItems = productDbResults.Items
+        .filter((e) => e.SK.S.startsWith(`${buildProductKey(productId)}|ADDON`));
+    console.log("productAddOnItems", productAddOnItems);
+
+    const addOns = productAddOnItems.map((e) => {
         return {
-            statusCode: 404,
-            body: JSON.stringify({ message: 'Product not found.' })
+            name: e.name.S,
+            label: e.label.S,
+            metadata: e.meta.M
         };
-    }
+    })
+    product["addOns"] = addOns;
+    console.log("addOns", addOns);
 
-    const product = {
-        id: result.Item.id.S,
-        name: result.Item.name.S,
-        description: result.Item.description.S,
-        basePrice: result.Item.basePrice.N
-    };
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ product })
-    };
-};
+    response.json(product);
+});
 
-module.exports.create = async (event, context) => {
-    const { merchantId } = event.pathParameters;
-    const requestBody = JSON.parse(event.body);
-    const product = {
-        name: requestBody.name,
-        description: requestBody.description,
-        basePrice: requestBody.basePrice,
-    }
 
-    const { categoryId } = requestBody;
-    const RequestItems = {
-        [TableName]: {
-            Keys: [
-                {
-                    PK: { S: `MERCHANT#${merchantId}` },
-                    SK: { S: `CATEGORY#${`${categoryId}`.padStart(4, '0')}` }
-                },
-                {
-                    PK: { S: `MERCHANT#${merchantId}` },
-                    SK: { S: '_META#PRODUCT#COUNTER' }
-                }
-            ]
-        }
-    };
+const buildMerchantKey = (merchantId) => {
+    return `MERCHANT#${merchantId.padStart(7, '0')}`;
+}
 
-    const categoryDbResult = await db.batchGetItem({ RequestItems }).promise();
-    const categoryResult = categoryDbResult.Responses[TableName].find((e) => e.SK.S.startsWith("CATEGORY#"));
-    if (!categoryResult) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: 'Product category not found.' })
-        };
-    }
+const buildProductKey = (productId) => {
+    return `PRODUCT#${productId.padStart(7, '0')}`;
+}
 
-    product.category = {
-        id: categoryResult.id.S,
-        name: categoryResult.name.S
-    };
-
-    const counterResult = categoryDbResult.Responses[TableName].find((e) => e.SK.S === "_META#PRODUCT#COUNTER");
-    if (!counterResult) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: 'Product counter not found, shit!' })
-        };
-    }
-    product.id = counterResult.value.N
-
-    const key = {
-        PK: `MERCHANT#${merchantId}`,
-        SK: `PRODUCT#${product.id.padStart(7, '0')}`
-    }
-
-    const createProductResult = await db.batchWriteItem({
-        RequestItems: {
-            [TableName]: [
-                {
-                    PutRequest: {
-                        Item: {
-                            PK: { S: key.PK },
-                            SK: { S: key.SK },
-                            id: { S: product.id },
-                            name: { S: product.name },
-                            description: { S: product.description },
-                            basePrice: { N: product.basePrice },
-                            categoryId: { S: product.category.id }
-                        },
-                    }
-                },
-                {
-                    PutRequest: {
-                        Item: {
-                            PK: { S: `MERCHANT#${merchantId}` },
-                            SK: { S: '_META#PRODUCT#COUNTER' },
-                            value: { N: `${parseInt(product.id) + 1}` },
-                        },
-                    }
-                }
-            ]
-        }
-    }).promise();
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify(product)
-    };
-};
+module.exports.handler = serverless(app);

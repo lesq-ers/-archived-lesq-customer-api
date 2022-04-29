@@ -52,19 +52,25 @@ functions:
       - http:
           path: 'api/merchants/{merchantId}/menu/{default*}'
           method: '*'
+  product-api:
+    handler: handler/product.handler
+    events:
+      - http:
+          path: '/api/merchants/{merchantId}/products/{default*}'
+          method: '*'
 
-  product-create:
-    handler: handler/product.create
-    events:
-      - http:
-          path: api/merchants/{merchantId}/products
-          method: post
-  product-get:
-    handler: handler/product.get
-    events:
-      - http:
-          path: api/merchants/{merchantId}/products/{productId}
-          method: get
+  # product-create:
+  #   handler: handler/product.create
+  #   events:
+  #     - http:
+  #         path: api/merchants/{merchantId}/products
+  #         method: post
+  # product-get:
+  #   handler: handler/product.get
+  #   events:
+  #     - http:
+  #         path: api/merchants/{merchantId}/products/{productId}
+  #         method: get
 
 resources:
   Resources:
