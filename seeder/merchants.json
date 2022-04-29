@@ -240,9 +240,9 @@
         "basePrice": 175
     },
     {
-        "SK": "ADDONS#2",
+        "PK": "MERCHANT#0000001",
+        "SK": "PRODUCT#0000001|ADDONS#000001",
         "name": "Size",
-        "PK": "PRODUCT#0000001",
         "label": "Choose your size:",
         "meta": {
             "min": 0,
